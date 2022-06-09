@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
 import Notiflix from 'notiflix';
 import CreateContact from './CreateContact/CreateContact';
@@ -10,27 +10,24 @@ Notiflix.Notify.init({
   width: '280px',
   position: 'center-top',
 });
-class App extends Component {
-  state = {
-    contacts: [],
-    filter: '',
-  };
-  //Download phonebook from user localstorage
-  componentDidMount() {
+
+const App = () => {
+  const [contacts, setContacts] = useState([]);
+  const [filterContatsByQuery, setfilterContatsByQuery] = useState('');
+
+  useEffect(() => {
     try {
       const phonebookParse = localStorage.getItem('phonebook');
       if (phonebookParse) {
         const contacts = JSON.parse(phonebookParse);
-        this.setState({ contacts });
+        setContacts({ contacts });
       }
     } catch (error) {
       throw new Error(error);
     }
-  }
 
-  componentDidUpdate() {
-    localStorage.setItem('phonebook', JSON.stringify(this.state.contacts));
-  }
+    localStorage.setItem('phonebook', JSON.stringify(contacts));
+  });
 
   inputIds = {
     nameId: nanoid(),
@@ -39,7 +36,7 @@ class App extends Component {
 
   handleOnChangeInput = evt => {
     const { name, value } = evt.target;
-    this.setState({ [name]: value });
+    setContacts({ [name]: value });
   };
   handleSubmit = evt => {
     const { name, number, contacts } = this.state;
@@ -64,33 +61,43 @@ class App extends Component {
     }));
   };
 
-  render() {
-    const { nameId, numberId } = this.inputIds;
-    const { contacts, filter } = this.state;
-    const filtedContacts = FilterContactsByName(contacts, filter);
+  return (
+    <>
+      <h1>Phonebook</h1>
+      <CreateContact
+        handleOnChangeInput={handleOnChangeInput}
+        handleSubmit={handleSubmit}
+        nameId={nameId}
+        numberId={numberId}
+      />
+      <h2>Contacts</h2>
 
-    return (
-      <>
-        <h1>Phonebook</h1>
-        <CreateContact
-          handleOnChangeInput={this.handleOnChangeInput}
-          handleSubmit={this.handleSubmit}
-          nameId={nameId}
-          numberId={numberId}
-        />
-        <h2>Contacts</h2>
+      <Filter filter={filter} handleOnChangeInput={this.handleOnChangeInput} />
+      <ContactList
+        contacts={filtedContacts}
+        deleteContact={this.handleDeleteContact}
+      />
+    </>
+  );
+};
+// class App2 extends Component {
+//   state = {
+//     contacts: [],
+//     filter: '',
+//   };
+//   //Download phonebook from user localstorage
+//   componentDidMount()
 
-        <Filter
-          filter={filter}
-          handleOnChangeInput={this.handleOnChangeInput}
-        />
-        <ContactList
-          contacts={filtedContacts}
-          deleteContact={this.handleDeleteContact}
-        />
-      </>
-    );
-  }
-}
+//   componentDidUpdate() {
+
+//   }
+
+//   render() {
+//     const { nameId, numberId } = this.inputIds;
+//     const { contacts, filter } = this.state;
+//     const filtedContacts = FilterContactsByName(contacts, filter);
+
+//   }
+// }
 
 export default App;
