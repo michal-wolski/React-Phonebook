@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Filter = ({ filter, handleOnChangeInput }) => {
+const Filter = ({ filter, handleOnChangeSearchContact }) => {
   return (
     <>
       <p>Find contacts by name</p>
@@ -9,7 +9,7 @@ const Filter = ({ filter, handleOnChangeInput }) => {
         type="text"
         name="filter"
         value={filter}
-        onChange={handleOnChangeInput}
+        onChange={handleOnChangeSearchContact}
       ></input>
     </>
   );
@@ -19,5 +19,5 @@ export default Filter;
 
 Filter.propTypes = {
   filter: PropTypes.string,
-  handleOnChangeInput: PropTypes.func.isRequired,
+  handleOnChangeSearchContact: PropTypes.func,
 };

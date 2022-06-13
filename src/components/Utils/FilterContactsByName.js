@@ -1,5 +1,5 @@
-export function FilterContactsByName(contacts, filter) {
-  return contacts.filter(contact =>
-    contact.name.toLowerCase().includes(filter.toLowerCase())
+export function FilterContactsByName(contacts, filterContatsByQuery) {
+  return contacts.filter(({ name }) =>
+    name.toLowerCase().includes(filterContatsByQuery.toLowerCase())
   );
 }

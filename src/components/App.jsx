@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
 import Notiflix from 'notiflix';
 import CreateContact from './CreateContact/CreateContact';
@@ -14,90 +14,63 @@ Notiflix.Notify.init({
 const App = () => {
   const [contacts, setContacts] = useState([]);
   const [filterContatsByQuery, setfilterContatsByQuery] = useState('');
+  useEffect(() => {
+    const phonebook = JSON.parse(localStorage.getItem('phonebook'));
+
+    setContacts(phonebook);
+  }, []);
 
   useEffect(() => {
-    try {
-      const phonebookParse = localStorage.getItem('phonebook');
-      if (phonebookParse) {
-        const contacts = JSON.parse(phonebookParse);
-        setContacts({ contacts });
-      }
-    } catch (error) {
-      throw new Error(error);
-    }
-
     localStorage.setItem('phonebook', JSON.stringify(contacts));
-  });
+  }, [contacts]);
 
-  inputIds = {
+  const inputIds = {
     nameId: nanoid(),
     numberId: nanoid(),
   };
 
-  handleOnChangeInput = evt => {
-    const { name, value } = evt.target;
-    setContacts({ [name]: value });
+  const handleOnChangeSearchContact = evt => {
+    const { value } = evt.target;
+    setfilterContatsByQuery(value);
   };
-  handleSubmit = evt => {
-    const { name, number, contacts } = this.state;
-    evt.preventDefault();
+
+  const onSubmitCreateContact = ({ name, number }) => {
     const createContact = {
       id: nanoid(),
       name,
       number,
     };
+
     if (contacts.find(contact => contact.name === name)) {
       Notiflix.Notify.info('This name already exists');
     } else {
-      this.setState(state => ({
-        contacts: [...state.contacts, createContact],
-      }));
+      setContacts([createContact, ...contacts]);
     }
   };
 
-  handleDeleteContact = id => {
-    this.setState(state => ({
-      contacts: state.contacts.filter(contact => contact.id !== id),
-    }));
+  const handleDeleteContact = id => {
+    setContacts(contacts.filter(index => index.id !== id));
   };
+
+  const filtredContacts = FilterContactsByName(contacts, filterContatsByQuery);
 
   return (
     <>
       <h1>Phonebook</h1>
       <CreateContact
-        handleOnChangeInput={handleOnChangeInput}
-        handleSubmit={handleSubmit}
-        nameId={nameId}
-        numberId={numberId}
+        onSubmitCreateContact={onSubmitCreateContact}
+        nameId={inputIds.nameId}
+        numberId={inputIds.numberId}
       />
       <h2>Contacts</h2>
 
-      <Filter filter={filter} handleOnChangeInput={this.handleOnChangeInput} />
-      <ContactList
-        contacts={filtedContacts}
-        deleteContact={this.handleDeleteContact}
+      <Filter
+        filter={filterContatsByQuery}
+        handleOnChangeSearchContact={handleOnChangeSearchContact}
       />
+      <ContactList contacts={contacts} deleteContact={handleDeleteContact} />
     </>
   );
 };
-// class App2 extends Component {
-//   state = {
-//     contacts: [],
-//     filter: '',
-//   };
-//   //Download phonebook from user localstorage
-//   componentDidMount()
-
-//   componentDidUpdate() {
-
-//   }
-
-//   render() {
-//     const { nameId, numberId } = this.inputIds;
-//     const { contacts, filter } = this.state;
-//     const filtedContacts = FilterContactsByName(contacts, filter);
-
-//   }
-// }
 
 export default App;

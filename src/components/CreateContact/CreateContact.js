@@ -1,14 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-const CreateContact = ({
-  name,
-  nameId,
-  number,
-  numberId,
-  handleOnChangeInput,
-  handleSubmit,
-}) => {
+const CreateContact = ({ nameId, numberId, onSubmitCreateContact }) => {
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
+
+  const handleChangeNameInput = eve => {
+    setName(eve.currentTarget.value);
+    console.log(name);
+  };
+  const handleChangeNumberInput = eve => {
+    setNumber(eve.currentTarget.value);
+    console.log(number);
+  };
+  const onSubmitForm = eve => {
+    eve.preventDefault();
+    onSubmitCreateContact({ name, number });
+    resetForm();
+  };
+
+  const resetForm = () => {
+    setName('');
+    setNumber('');
+  };
   return (
     <>
       <form>
@@ -21,7 +35,7 @@ const CreateContact = ({
           pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
           title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
           required
-          onChange={handleOnChangeInput}
+          onChange={handleChangeNameInput}
         />
         <label htmlFor={numberId}>Number</label>
         <input
@@ -32,9 +46,9 @@ const CreateContact = ({
           pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
           required
-          onChange={handleOnChangeInput}
+          onChange={handleChangeNumberInput}
         />
-        <button type="submit" onClick={handleSubmit}>
+        <button type="submit" onClick={onSubmitForm}>
           Add contact
         </button>
       </form>
@@ -43,12 +57,9 @@ const CreateContact = ({
 };
 
 CreateContact.propTypes = {
-  name: PropTypes.string,
   nameId: PropTypes.string,
-  number: PropTypes.number,
   numberId: PropTypes.string,
-  handleOnChangeInput: PropTypes.func.isRequired,
-  handleSubmit: PropTypes.func.isRequired,
+  onSubmitCreateContact: PropTypes.func.isRequired,
 };
 
 export default CreateContact;
