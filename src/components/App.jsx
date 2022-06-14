@@ -12,13 +12,11 @@ Notiflix.Notify.init({
 });
 
 const App = () => {
-  const [contacts, setContacts] = useState([]);
-  const [filterContatsByQuery, setfilterContatsByQuery] = useState('');
-  useEffect(() => {
+  const [contacts, setContacts] = useState(() => {
     const phonebook = JSON.parse(localStorage.getItem('phonebook'));
-
-    setContacts(phonebook);
-  }, []);
+    return phonebook || [];
+  });
+  const [filterContatsByQuery, setfilterContatsByQuery] = useState('');
 
   useEffect(() => {
     localStorage.setItem('phonebook', JSON.stringify(contacts));
@@ -68,7 +66,10 @@ const App = () => {
         filter={filterContatsByQuery}
         handleOnChangeSearchContact={handleOnChangeSearchContact}
       />
-      <ContactList contacts={contacts} deleteContact={handleDeleteContact} />
+      <ContactList
+        contacts={filtredContacts}
+        deleteContact={handleDeleteContact}
+      />
     </>
   );
 };
